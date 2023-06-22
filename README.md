@@ -5,7 +5,7 @@ I &lt;3 Shells (iv3shells) is a script that generates reverse-shells in a quick-
 
 # Installation
 ```
-git clone git@github.com:arch-err/iv3shells.git
+git clone https://github.com/arch-err/iv3shells.git
 ```
 ## Dependencies
  - xclip
