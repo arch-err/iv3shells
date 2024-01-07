@@ -16,7 +16,7 @@ getShell() {
 }
 
 generate() {
-    
+
     # Get the selected command
     if [[ "$OS" == "l"* ]]
     then
@@ -31,14 +31,14 @@ generate() {
     fi
 
     CMD=$(echo $file | perl -pe 's/^(.*)/cat "$1\"/g' | bash)
-    
-    
+
+
     # Substitute variables for real values
     SHELL=$(echo $SHELL | perl -pe 's/\//\\\//g')
     CMD="$(echo $CMD | perl -pe "s/IP/$IP/g; s/PORT/$PORT/g; s/SHELL/$SHELL/g")"
-   
 
-    if $ENCODE 
+
+    if $ENCODE
     then
         B64=$(echo "$CMD" | base64 | perl -pe "s/\s//g")
         # Convert OS to lowercase
@@ -53,7 +53,8 @@ generate() {
 
     # Copy to clipboard
     echo ""
-    echo "$CMD" | xclip -sel clip
+    # echo "$CMD" | xclip -sel clip
+    echo "$CMD" | wl-copy
     echo "----------------------------------------------------"
     echo "Copied the following reverseshell to the clipboard: "
     echo "----------------------------------------------------"
@@ -75,7 +76,7 @@ help() {
     echo "     \\\\     ----           \/            |_____/|_| |_|\___|_|_|___/     //  "
 
     echo "
-    
+
 
     Usage: iv3shells [ OPTIONS ]
 
@@ -91,13 +92,13 @@ help() {
       -o          Specify OS
       -e          Base64 encode the reverse shell (Still a bit buggy, may not always work)
       -h          Show this help page
-   
- 
+
+
 
      CREDS
     --------
     This script is inspired by the Hack-Tools project and Villain, made by Ludovic Coulon & Riadh Bouchahoua,
-    and t3l3machus respectively. 
+    and t3l3machus respectively.
 
     Links:
      - https://github.com/t3l3machus/Villain
@@ -134,7 +135,7 @@ while getopts ":o:ep:s:i:h" opt; do
     s)
       SHELL=$OPTARG;;
     e)
-      ENCODE=true;; 
+      ENCODE=true;;
     h)
       # Help/usage information
       help
@@ -151,10 +152,10 @@ while getopts ":o:ep:s:i:h" opt; do
   esac
 done
 
-[[ -z $IP ]] && getIP 
-[[ -z $PORT ]] && getPort 
-[[ -z $OS ]] && getOS 
-[[ $OS == "l"* ]] && [[ -z $SHELL ]] && getShell 
+[[ -z $IP ]] && getIP
+[[ -z $PORT ]] && getPort
+[[ -z $OS ]] && getOS
+[[ $OS == "l"* ]] && [[ -z $SHELL ]] && getShell
 
 
 # Error handling for SHELL, IP and PORT
@@ -180,4 +181,3 @@ then
 fi
 
 generate
-
